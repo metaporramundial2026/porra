@@ -179,6 +179,36 @@
   #cookie-again{background:var(--tote);color:#23301F;display:none}
   #cookie-close{background:transparent;color:var(--cream-dim);border:1px solid var(--card-edge)}
 
+  /* ===== Identidad: ¿quién eres? ===== */
+  #who-bar{position:sticky;top:0;z-index:40;background:#0A2F20;border-bottom:2px solid var(--card-edge);
+    padding:9px 14px;display:flex;align-items:center;gap:10px;font-size:.9rem;cursor:pointer}
+  #who-bar .who-main{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    font-weight:700;color:var(--cream)}
+  #who-bar .who-main b{color:var(--tote)}
+  #who-bar .who-btn{flex:none;font-family:'Barlow Condensed';font-weight:800;font-size:.78rem;
+    letter-spacing:.06em;text-transform:uppercase;color:#0A2F20;background:var(--tote);
+    border:none;border-radius:999px;padding:5px 12px;cursor:pointer}
+  .lane.me{background:rgba(255,199,44,.32)!important;box-shadow:inset 5px 0 0 var(--tote)}
+  .lane.me .name::after{content:" · TÚ";color:#B3361F;font-weight:900}
+  tr.me td{background:rgba(255,199,44,.14)}
+  tr.me td:first-child{box-shadow:inset 4px 0 0 var(--tote)}
+  details.player-honor.me{border-color:var(--tote);box-shadow:0 0 0 1px var(--tote)}
+  #who-overlay{position:fixed;inset:0;z-index:110;background:rgba(5,22,15,.96);display:none;
+    flex-direction:column;padding:16px 14px env(safe-area-inset-bottom)}
+  #who-overlay.open{display:flex}
+  #who-overlay h2{font-size:1.4rem;font-weight:800;text-transform:uppercase;margin-bottom:10px;
+    display:flex;justify-content:space-between;align-items:center}
+  #who-overlay h2 button{background:none;border:1px solid var(--card-edge);color:var(--cream-dim);
+    border-radius:999px;width:34px;height:34px;font-size:1rem;cursor:pointer}
+  #who-search{width:100%;font-family:'Barlow',sans-serif;font-size:1rem;font-weight:600;color:var(--cream);
+    background:var(--card);border:1px solid var(--card-edge);border-radius:12px;padding:12px;margin-bottom:12px}
+  #who-search::placeholder{color:#7FA38D}
+  #who-list{overflow:auto;flex:1;display:flex;flex-direction:column;gap:8px;padding-bottom:24px}
+  #who-list button{display:flex;align-items:center;gap:10px;text-align:left;font-family:'Barlow',sans-serif;
+    font-size:1rem;font-weight:700;color:var(--cream);background:var(--card);
+    border:1px solid var(--card-edge);border-radius:12px;padding:12px 14px;cursor:pointer}
+  #who-list button:active{background:#0F4A34}
+
   /* ===== Estados ===== */
   #loading,#error{text-align:center;padding:60px 20px;color:var(--cream-dim)}
   #loading .emoji{font-size:2.6rem;display:inline-block;animation:trot 1s ease-in-out infinite}
@@ -198,6 +228,17 @@
     <div id="meta-day"></div>
   </div>
 </header>
+
+<div id="who-bar" style="display:none">
+  <span class="who-main" id="who-main"></span>
+  <button class="who-btn" id="who-change">Cambiar</button>
+</div>
+
+<div id="who-overlay" role="dialog" aria-label="Identifícate">
+  <h2>¿Quién eres? <button id="who-close" aria-label="Cerrar">✕</button></h2>
+  <input id="who-search" type="search" placeholder="Busca tu nombre…" autocomplete="off">
+  <div id="who-list"></div>
+</div>
 
 <div id="loading"><span class="emoji">🏇</span><br>Abriendo el hipódromo…</div>
 <div id="error">
@@ -322,8 +363,12 @@ async function load(){
   const N = players.length;
 
   const clas = [];
-  for (let r = 4; r < 4 + N; r++){
-    clas.push({pos:C[r][1], name:String(C[r][2]).trim(), total:+C[r][3] || 0,
+  for (let r = 4; r < C.length; r++){
+    const nm = C[r] && C[r][2];
+    if (!nm) break;
+    const name = String(nm).trim();
+    if (name.startsWith('Pegar')) continue;
+    clas.push({pos:C[r][1], name, total:+C[r][3] || 0,
       bk:(C[r] || []).slice(4, 19).map(x => +x || 0)});
   }
 
@@ -434,6 +479,7 @@ function renderRace(){
     if (raceDiv === null || z !== currentZone){ currentZone = z; newTrack(z); }
     const lane = document.createElement('div');
     lane.className = 'lane';
+    lane.dataset.player = p.name;
     const min = sorted[sorted.length - 1].total;
     const span = max - min;
     const pct = max === 0 ? 2 : (span === 0 ? 50 : 3 + ((p.total - min) / span) * 85);
@@ -453,6 +499,7 @@ function renderRace(){
   $('#race-note').textContent = max === 0
     ? '🔫 Todos en el cajón de salida. La carrera arranca con el primer resultado.'
     : 'Pista a escala entre el último y el líder. La tortuga es quien cierra la carrera, con cariño. 🐢';
+  applyMe();
 }
 
 /* ---------- clasificación ---------- */
@@ -476,6 +523,7 @@ function renderClas(){
   D.clas.forEach((p, i) => {
     const tr = document.createElement('tr');
     tr.className = 'clas-row';
+    tr.dataset.player = p.name;
     const medal = ['🥇','🥈','🥉'][i] || (i + 1) + 'º';
     tr.innerHTML = `<td class="pos-cell">${medal}</td>
       <td><span class="silk" style="display:inline-block;vertical-align:-2px;background:${silkColor(p.name)};margin-right:8px"></span>${esc(p.name)}${pkBadge(p.name)}
@@ -488,6 +536,7 @@ function renderClas(){
     tr.addEventListener('click', () => bk.classList.toggle('open'));
     tb.appendChild(tr); tb.appendChild(bk);
   });
+  applyMe();
 }
 
 /* ---------- pronósticos ---------- */
@@ -527,11 +576,12 @@ function renderMatch(i){
   rows.forEach(r => {
     const cls = r.pts >= 2 ? 'hit2' : r.pts >= 1 ? 'hit1' : '';
     const pretty = esc(r.raw.replace('·', ' · ').replace('|', ' | '));
-    tb.insertAdjacentHTML('beforeend', `<tr>
+    tb.insertAdjacentHTML('beforeend', `<tr data-player="${esc(r.name)}">
       <td><span class="silk" style="display:inline-block;vertical-align:-2px;background:${silkColor(r.name)};margin-right:8px"></span>${esc(r.name)}${pkBadge(r.name)}</td>
       <td><span class="pick ${cls}">${pretty}</span></td>
       <td class="num">${r.pts > 0 ? '<span class="pts-won">+' + r.pts + '</span>' : '·'}</td></tr>`);
   });
+  applyMe();
 }
 
 /* ---------- palmarés ---------- */
@@ -551,11 +601,70 @@ function renderHonor(){
   D.players.forEach((p, idx) => {
     const list = D.honorRows.map(h =>
       `<div><span>${esc(h.label)}</span><span>${esc(h.picks[idx])}</span></div>`).join('');
-    hp.insertAdjacentHTML('beforeend', `<details class="player-honor">
+    hp.insertAdjacentHTML('beforeend', `<details class="player-honor" data-player="${esc(p.name)}">
       <summary><span><span class="silk" style="display:inline-block;vertical-align:-2px;background:${silkColor(p.name)};margin-right:8px"></span>${esc(p.name)}${pkBadge(p.name)}</span></summary>
       <div class="honor-list">${list}</div></details>`);
   });
+  applyMe();
 }
+
+/* ---------- identidad: ¿quién eres? ---------- */
+const ME_KEY = 'porra-yo';
+let ME = null;
+try { ME = localStorage.getItem(ME_KEY); } catch(e){}
+
+function applyMe(){
+  document.querySelectorAll('[data-player]').forEach(el =>
+    el.classList.toggle('me', !!ME && el.dataset.player === ME));
+}
+
+function renderWhoBar(){
+  const bar = $('#who-bar'), main = $('#who-main');
+  bar.style.display = 'flex';
+  const valid = ME && D.players.some(p => p.name === ME);
+  if (!valid){
+    main.innerHTML = '👋 ¿Quién eres? Toca para encontrarte en la porra';
+    $('#who-change').textContent = 'Soy yo';
+  } else {
+    const sorted = [...D.clas].sort((a, b) => b.total - a.total);
+    const i = sorted.findIndex(p => p.name === ME);
+    const p = sorted[i];
+    main.innerHTML = `🏇 <b>${esc(ME)}</b> · ${i + 1}º de ${sorted.length} · <b>${p.total} pts</b>`;
+    $('#who-change').textContent = 'Cambiar';
+  }
+}
+
+function openWho(){
+  const list = $('#who-list');
+  const build = filter => {
+    list.innerHTML = '';
+    D.players.filter(p => p.name.toLowerCase().includes(filter))
+      .forEach(p => {
+        const b = document.createElement('button');
+        b.innerHTML = `<span class="silk" style="background:${silkColor(p.name)}"></span>${esc(p.name)}${pkBadge(p.name)}`;
+        b.addEventListener('click', () => {
+          ME = p.name;
+          try { localStorage.setItem(ME_KEY, ME); } catch(e){}
+          $('#who-overlay').classList.remove('open');
+          renderWhoBar(); applyMe();
+        });
+        list.appendChild(b);
+      });
+  };
+  build('');
+  const inp = $('#who-search');
+  inp.value = '';
+  inp.oninput = () => build(inp.value.trim().toLowerCase());
+  $('#who-overlay').classList.add('open');
+}
+
+$('#who-change').addEventListener('click', e => { e.stopPropagation(); openWho(); });
+$('#who-close').addEventListener('click', () => $('#who-overlay').classList.remove('open'));
+$('#who-bar').addEventListener('click', () => {
+  if (!ME || !D || !D.players.some(p => p.name === ME)){ openWho(); return; }
+  const el = document.querySelector('section.active [data-player].me');
+  if (el) el.scrollIntoView({behavior:'smooth', block:'center'});
+});
 
 /* ---------- galleta de la fortuna ---------- */
 const FORTUNES = [
@@ -656,7 +765,7 @@ load().then(d => {
   D = d;
   $('#loading').style.display = 'none';
   $('#app').style.display = 'block';
-  renderHeader(); stewardLines(); renderClas(); renderRace(); renderPredsSelect(); renderHonor();
+  renderHeader(); stewardLines(); renderClas(); renderRace(); renderPredsSelect(); renderHonor(); renderWhoBar();
 }).catch(e => {
   console.error(e);
   $('#loading').style.display = 'none';
