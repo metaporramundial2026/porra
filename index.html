@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Porra Mundial 2026 · Metaporra</title>
+<meta name="description" content="Clasificación y pronósticos de la porra del Mundial 2026">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  :root{
+    --paper:#F2ECDD;        /* programa de carreras */
+    --ink:#16382B;          /* verde hipódromo */
+    --ink-soft:#4A6457;
+    --turf:#0E5C3F;
+    --track:#E3D5B8;        /* arena de la pista */
+    --track-line:#C9B68C;
+    --silk-red:#D43A26;     /* casaca / acento */
+    --gold:#C09A2C;
+    --card:#FBF8F0;
+    --shadow:0 1px 3px rgba(22,56,43,.12);
+    --radius:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html{scroll-behavior:smooth}
+  body{font-family:'Barlow',system-ui,sans-serif;background:var(--paper);color:var(--ink);font-size:16px;line-height:1.45;padding-bottom:84px}
+  h1,h2,h3,.disp{font-family:'Barlow Condensed',sans-serif}
+
+/* ===== Cabecera ===== */
+header{background:var(–turf);color:#F4F0E4;padding:14px 16px 12px;position:relative;overflow:hidden}
+header::after{content:””;position:absolute;left:0;right:0;bottom:0;height:5px;
+background:repeating-linear-gradient(90deg,#fff 0 10px,var(–ink) 10px 20px);opacity:.85}
+.eyebrow{font-family:‘Barlow Condensed’;font-weight:600;letter-spacing:.14em;text-transform:uppercase;font-size:.72rem;color:#CFE3D6}
+header h1{font-size:1.9rem;font-weight:800;line-height:1.05;letter-spacing:.01em;text-transform:uppercase}
+header h1 span{color:#F3C94C}
+.meta-line{display:flex;gap:14px;margin-top:6px;font-size:.8rem;color:#CFE3D6}
+.meta-line b{color:#fff;font-weight:600}
+
+/* ===== Navegación ===== */
+nav{position:fixed;bottom:0;left:0;right:0;z-index:50;background:var(–card);
+border-top:1px solid var(–track-line);display:flex;box-shadow:0 -2px 10px rgba(22,56,43,.12);
+padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;background:none;border:none;padding:9px 2px 8px;font-family:‘Barlow Condensed’;
+font-size:.86rem;font-weight:600;letter-spacing:.04em;color:var(–ink-soft);cursor:pointer;
+display:flex;flex-direction:column;align-items:center;gap:1px;text-transform:uppercase}
+nav button .ico{font-size:1.25rem;line-height:1}
+nav button.active{color:var(–silk-red)}
+nav button.active .ico{transform:translateY(-1px)}
+
+main{max-width:680px;margin:0 auto;padding:16px 14px 28px}
+section{display:none}
+section.active{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){section.active{animation:none}}
+
+.sec-title{font-size:1.45rem;font-weight:700;text-transform:uppercase;letter-spacing:.02em;margin-bottom:2px}
+.sec-sub{font-size:.85rem;color:var(–ink-soft);margin-bottom:14px}
+
+/* ===== Carrera ===== */
+.race{background:var(–track);border:1px solid var(–track-line);border-radius:var(–radius);
+padding:10px 0 6px;position:relative;box-shadow:var(–shadow)}
+.race::before{content:””;position:absolute;top:0;bottom:0;right:34px;width:10px;
+background:repeating-conic-gradient(#16382B 0% 25%, #fff 0% 50%) 0 0/10px 10px;opacity:.9;border-radius:2px}
+.race-head{display:flex;justify-content:space-between;padding:0 14px 8px;font-family:‘Barlow Condensed’;
+font-weight:600;font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(–ink-soft)}
+.lane{position:relative;height:42px;border-top:1px dashed var(–track-line);padding:0 14px}
+.lane:last-child{border-bottom:1px dashed var(–track-line)}
+.horse{position:absolute;top:50%;transform:translateY(-50%);left:0;display:flex;align-items:center;gap:6px;
+transition:left 1.1s cubic-bezier(.22,.9,.35,1);will-change:left}
+@media (prefers-reduced-motion: reduce){.horse{transition:none}}
+.horse .emoji{font-size:1.5rem;filter:drop-shadow(0 1px 1px rgba(0,0,0,.25))}
+.bib{display:inline-flex;align-items:center;gap:6px;background:var(–card);border:1px solid var(–track-line);
+border-radius:999px;padding:2px 9px 2px 4px;font-size:.78rem;font-weight:600;white-space:nowrap;box-shadow:var(–shadow)}
+.silk{width:14px;height:14px;border-radius:50%;border:2px solid #fff;flex:none}
+.bib .pts{font-family:‘Barlow Condensed’;font-weight:700;color:var(–silk-red);font-size:.85rem}
+.gate-note{margin:14px 2px 0;font-size:.85rem;color:var(–ink-soft);font-style:italic}
+
+/* ===== Tablas ===== */
+.card{background:var(–card);border:1px solid var(–track-line);border-radius:var(–radius);
+box-shadow:var(–shadow);overflow:hidden;margin-bottom:14px}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+th{font-family:‘Barlow Condensed’;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
+font-size:.75rem;color:var(–ink-soft);text-align:left;padding:10px 10px 6px;border-bottom:2px solid var(–track-line)}
+td{padding:9px 10px;border-bottom:1px solid #EDE5D2;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.pos-cell{font-family:‘Barlow Condensed’;font-weight:800;font-size:1.05rem;width:38px;color:var(–ink-soft)}
+.medal{font-size:1rem}
+.clas-row{cursor:pointer}
+.clas-row:active{background:#F4EEDD}
+.breakdown{display:none;background:#F6F1E2}
+.breakdown.open{display:table-row}
+.breakdown td{padding:10px 12px 12px}
+.bk-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;font-size:.82rem}
+.bk-grid div{display:flex;justify-content:space-between;border-bottom:1px dotted var(–track-line);padding:2px 0}
+.bk-grid b{font-variant-numeric:tabular-nums}
+
+/* ===== Pronósticos ===== */
+.picker{display:flex;gap:8px;margin-bottom:12px}
+select{flex:1;font-family:‘Barlow’,sans-serif;font-size:.95rem;font-weight:500;color:var(–ink);
+background:var(–card);border:1px solid var(–track-line);border-radius:10px;padding:10px 12px;box-shadow:var(–shadow)}
+.match-head{background:var(–turf);color:#F4F0E4;padding:14px;border-radius:var(–radius) var(–radius) 0 0;text-align:center}
+.match-head .teams{font-family:‘Barlow Condensed’;font-weight:700;font-size:1.35rem;text-transform:uppercase;letter-spacing:.02em}
+.match-head .score{font-family:‘Barlow Condensed’;font-weight:800;font-size:2rem;color:#F3C94C;line-height:1.1}
+.match-head .when{font-size:.78rem;color:#CFE3D6;margin-top:2px}
+.pick{display:inline-block;font-family:‘Barlow Condensed’;font-weight:700;font-size:.95rem;
+background:#EFE8D4;border:1px solid var(–track-line);border-radius:7px;padding:1px 8px;white-space:nowrap}
+.pick.hit2{background:#DCEEDB;border-color:#9CC49A}
+.pick.hit1{background:#F6ECCB;border-color:#DFC878}
+td .pts-won{font-family:‘Barlow Condensed’;font-weight:800;color:var(–silk-red)}
+
+/* ===== Palmarés ===== */
+.honor-block{margin-bottom:16px}
+.honor-block h3{font-size:1.05rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;margin-bottom:8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:var(–card);border:1px solid var(–track-line);border-radius:999px;
+padding:4px 11px;font-size:.84rem;font-weight:500;box-shadow:var(–shadow)}
+.chip b{font-family:‘Barlow Condensed’;font-weight:800;color:var(–silk-red)}
+details.player-honor{background:var(–card);border:1px solid var(–track-line);border-radius:var(–radius);
+box-shadow:var(–shadow);margin-bottom:8px;overflow:hidden}
+details.player-honor summary{padding:11px 14px;font-weight:600;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center}
+details.player-honor summary::after{content:“▾”;color:var(–ink-soft);transition:transform .2s}
+details.player-honor[open] summary::after{transform:rotate(180deg)}
+.honor-list{padding:0 14px 12px;font-size:.86rem}
+.honor-list div{display:flex;justify-content:space-between;gap:10px;padding:4px 0;border-top:1px dotted var(–track-line)}
+.honor-list span:last-child{font-weight:600;text-align:right}
+
+/* ===== Estados ===== */
+#loading,#error{text-align:center;padding:60px 20px;color:var(–ink-soft)}
+#loading .emoji{font-size:2.4rem;display:inline-block;animation:trot 1s ease-in-out infinite}
+@keyframes trot{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@media (prefers-reduced-motion: reduce){#loading .emoji{animation:none}}
+#error{display:none}
+#error code{background:var(–card);padding:2px 6px;border-radius:6px}
+</style>
+
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">XXIII Mundial · USA · MEX · CAN</div>
+  <h1>Porra Mundial <span>2026</span></h1>
+  <div class="meta-line">
+    <div>Grupo <b>Metaporra</b></div>
+    <div id="meta-update"></div>
+    <div id="meta-day"></div>
+  </div>
+</header>
+
+<div id="loading"><span class="emoji">🏇</span><br>Abriendo el hipódromo…</div>
+<div id="error">
+  <p style="font-size:2rem">🚧</p>
+  <p>No se ha podido cargar <code>porra.xlsx</code>.</p>
+  <p style="margin-top:8px;font-size:.85rem">Comprueba que el archivo está subido junto a esta página con ese nombre exacto.</p>
+</div>
+
+<main id="app" style="display:none">
+
+  <section id="sec-race" class="active">
+    <div class="sec-title">La carrera</div>
+    <div class="sec-sub">Cada jugador avanza hacia la meta según sus puntos.</div>
+    <div class="race">
+      <div class="race-head"><span>Cajón de salida</span><span>Meta 🏁</span></div>
+      <div id="race-lanes"></div>
+    </div>
+    <div class="gate-note" id="race-note"></div>
+  </section>
+
+  <section id="sec-clas">
+    <div class="sec-title">Clasificación</div>
+    <div class="sec-sub">Toca un jugador para ver el desglose por fases.</div>
+    <div class="card"><table id="clas-table">
+      <thead><tr><th></th><th>Jugador</th><th class="num">Pts</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+  </section>
+
+  <section id="sec-preds">
+    <div class="sec-title">Pronósticos</div>
+    <div class="sec-sub">Elige un partido y mira qué dijo cada uno.</div>
+    <div class="picker"><select id="match-select"></select></div>
+    <div class="card">
+      <div class="match-head" id="match-head"></div>
+      <table id="preds-table">
+        <thead><tr><th>Jugador</th><th>Pronóstico</th><th class="num">Pts</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="sec-honor">
+    <div class="sec-title">Palmarés</div>
+    <div class="sec-sub">Apuestas de campeón, podio, Botas y Balones.</div>
+    <div id="honor-summary"></div>
+    <h3 class="disp" style="font-size:1.05rem;text-transform:uppercase;margin:18px 0 8px">Papeleta por jugador</h3>
+    <div id="honor-players"></div>
+  </section>
+
+</main>
+
+<nav>
+  <button data-sec="sec-race" class="active"><span class="ico">🏇</span>Carrera</button>
+  <button data-sec="sec-clas"><span class="ico">📋</span>Clasificación</button>
+  <button data-sec="sec-preds"><span class="ico">⚽</span>Pronósticos</button>
+  <button data-sec="sec-honor"><span class="ico">🏆</span>Palmarés</button>
+</nav>
+
+<script>
+"use strict";
+const FILE = 'porra.xlsx';
+const $ = s => document.querySelector(s);
+
+/* ---------- utilidades ---------- */
+const serialToDate = s => new Date(Math.round((s - 25569) * 86400 * 1000));
+const fmtDate = d => d.toLocaleDateString('es-ES', {weekday:'short', day:'numeric', month:'short'});
+const silkColor = name => {
+  let h = 0; for (const ch of name) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  return `hsl(${h % 360} 62% 42%)`;
+};
+const esc = t => String(t ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- carga y parseo ---------- */
+async function load(){
+  const res = await fetch(FILE + '?v=' + Date.now());
+  if (!res.ok) throw new Error('fetch');
+  const lastMod = res.headers.get('last-modified');
+  const wb = XLSX.read(await res.arrayBuffer(), {type:'array'});
+  const grid = n => XLSX.utils.sheet_to_json(wb.Sheets[n], {header:1, raw:true, defval:null});
+  const A = grid('ADMIN'), C = grid('CLAS');
+
+  // Jugadores: fila 5 de ADMIN (idx 4), columnas S, V, Y… (18 + 3k)
+  const players = [];
+  for (let c = 18; c < (A[4] || []).length; c += 3){
+    const n = A[4][c];
+    if (!n || String(n).startsWith('Pegar')) break;
+    players.push({name:String(n).trim(), col:c});
+  }
+  const N = players.length;
+
+  // Clasificación: CLAS filas 5..5+N (idx 4..), etiquetas de desglose en idx 3
+  const bkLabels = (C[3] || []).slice(4, 19).map(x => String(x || '').trim());
+  const clas = [];
+  for (let r = 4; r < 4 + N; r++){
+    clas.push({pos:C[r][1], name:String(C[r][2]).trim(), total:+C[r][3] || 0,
+      bk:(C[r] || []).slice(4, 19).map(x => +x || 0)});
+  }
+
+  // Partidos de grupos: ADMIN idx 5..76
+  const matches = [];
+  for (let r = 5; r <= 76; r++){
+    if (!A[r] || !A[r][10]) continue;
+    matches.push({phase:'Grupos', jor:'J' + A[r][6], code:A[r][9], name:String(A[r][10]).trim(),
+      date:typeof A[r][7] === 'number' ? serialToDate(A[r][7]) : null,
+      result:A[r][12], row:r});
+  }
+
+  // Eliminatorias (enfrentamientos): solo si algún jugador ya tiene pronóstico
+  const KO = [
+    ['Dieciseisavos', 163, 178], ['Octavos', 199, 206], ['Cuartos', 219, 222],
+    ['Semifinales', 231, 232], ['3º y 4º puesto', 243, 243], ['Final', 246, 246]
+  ];
+  for (const [phase, r1, r2] of KO){
+    for (let r = r1; r <= r2; r++){
+      if (!A[r]) continue;
+      const hasPred = players.some(p => A[r][p.col] && String(A[r][p.col]).includes('·'));
+      if (hasPred) matches.push({phase, jor:phase, code:String(A[r][9] || ''), name:String(A[r][10]).trim(), date:null, result:A[r][12], row:r});
+    }
+  }
+
+  // Palmarés: idx 249..257
+  const honorRows = [];
+  for (let r = 249; r <= 257; r++){
+    if (!A[r]) continue;
+    honorRows.push({label:String(A[r][10]).trim(), picks:players.map(p => String(A[r][p.col] ?? '—').trim())});
+  }
+
+  return {players, clas, matches, honorRows, A, lastMod};
+}
+
+/* ---------- render ---------- */
+let D;
+
+function renderHeader(){
+  if (D.lastMod) $('#meta-update').innerHTML = 'Actualizado <b>' + fmtDate(new Date(D.lastMod)) + '</b>';
+  const first = D.matches.find(m => m.date)?.date;
+  if (first){
+    const day = Math.floor((Date.now() - first.getTime()) / 86400000) + 1;
+    if (day >= 1) $('#meta-day').innerHTML = 'Día <b>' + day + '</b> del Mundial';
+  }
+}
+
+function renderRace(){
+  const lanes = $('#race-lanes');
+  lanes.innerHTML = '';
+  const sorted = [...D.clas].sort((a, b) => b.total - a.total);
+  const max = Math.max(...sorted.map(p => p.total));
+  sorted.forEach((p, i) => {
+    const lane = document.createElement('div');
+    lane.className = 'lane';
+    const pct = max > 0 ? 4 + (p.total / max) * 76 : 2;  // 4–80% del ancho; meta al 86%
+    const medal = max > 0 ? (i === 0 ? '🥇 ' : i === 1 ? '🥈 ' : i === 2 ? '🥉 ' : '') : '';
+    lane.innerHTML = `<div class="horse" style="left:2%">
+        <span class="emoji">🏇</span>
+        <span class="bib"><span class="silk" style="background:${silkColor(p.name)}"></span>${medal}${esc(p.name)} <span class="pts">${p.total}</span></span>
+      </div>`;
+    lanes.appendChild(lane);
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      lane.firstElementChild.style.left = pct + '%';
+    }));
+  });
+  $('#race-note').textContent = max === 0
+    ? '🔫 ¡Todos en el cajón de salida! La carrera empieza con el primer resultado.'
+    : 'Posiciones a escala: la meta es el líder actual.';
+}
+
+function renderClas(){
+  const tb = $('#clas-table tbody');
+  tb.innerHTML = '';
+  D.clas.forEach((p, i) => {
+    const tr = document.createElement('tr');
+    tr.className = 'clas-row';
+    const medal = ['🥇','🥈','🥉'][i] || (i + 1) + 'º';
+    tr.innerHTML = `<td class="pos-cell">${medal}</td>
+      <td><span class="silk" style="display:inline-block;vertical-align:-2px;background:${silkColor(p.name)};margin-right:7px"></span>${esc(p.name)}</td>
+      <td class="num"><b>${p.total}</b></td>`;
+    const bk = document.createElement('tr');
+    bk.className = 'breakdown';
+    const items = D.clasBkLabels.map((l, k) => l ? `<div><span>${esc(l)}</span><b>${p.bk[k]}</b></div>` : '').join('');
+    bk.innerHTML = `<td colspan="3"><div class="bk-grid">${items}</div></td>`;
+    tr.addEventListener('click', () => bk.classList.toggle('open'));
+    tb.appendChild(tr); tb.appendChild(bk);
+  });
+}
+
+function renderPredsSelect(){
+  const sel = $('#match-select');
+  sel.innerHTML = '';
+  let g = null, og = null;
+  D.matches.forEach((m, i) => {
+    if (m.jor !== g){ g = m.jor; og = document.createElement('optgroup'); og.label = m.phase === 'Grupos' ? 'Jornada ' + m.jor.slice(1) : m.jor; sel.appendChild(og); }
+    const o = document.createElement('option');
+    o.value = i;
+    o.textContent = (m.date ? fmtDate(m.date) + ' · ' : '') + m.name.replace('-', ' – ');
+    og.appendChild(o);
+  });
+  // por defecto: último partido con resultado, o el primero
+  let def = 0;
+  D.matches.forEach((m, i) => { if (m.result && m.result !== '-') def = i; });
+  sel.value = def;
+  sel.addEventListener('change', () => renderMatch(+sel.value));
+  renderMatch(def);
+}
+
+function renderMatch(i){
+  const m = D.matches[i];
+  const played = m.result && m.result !== '-';
+  $('#match-head').innerHTML = `
+    <div class="teams">${esc(m.name.replace('-', '  ·  '))}</div>
+    <div class="score">${played ? esc(m.result) : 'Por jugar'}</div>
+    <div class="when">${m.phase}${m.date ? ' · ' + fmtDate(m.date) : ''}</div>`;
+  const tb = $('#preds-table tbody');
+  tb.innerHTML = '';
+  const rows = D.players.map(p => {
+    const raw = D.A[m.row][p.col];
+    const pts = +D.A[m.row][p.col + 1] || 0;
+    return {name:p.name, raw:raw == null ? '—' : String(raw), pts};
+  }).sort((a, b) => b.pts - a.pts || a.name.localeCompare(b.name, 'es'));
+  rows.forEach(r => {
+    const cls = r.pts >= 2 ? 'hit2' : r.pts >= 1 ? 'hit1' : '';
+    const pretty = esc(r.raw.replace('·', ' · ').replace('|', ' | '));
+    tb.insertAdjacentHTML('beforeend', `<tr>
+      <td><span class="silk" style="display:inline-block;vertical-align:-2px;background:${silkColor(r.name)};margin-right:7px"></span>${esc(r.name)}</td>
+      <td><span class="pick ${cls}">${pretty}</span></td>
+      <td class="num">${r.pts > 0 ? '<span class="pts-won">+' + r.pts + '</span>' : '·'}</td></tr>`);
+  });
+}
+
+function renderHonor(){
+  const sum = $('#honor-summary');
+  sum.innerHTML = '';
+  D.honorRows.forEach(h => {
+    const counts = {};
+    h.picks.forEach(p => { if (p && p !== '—' && p !== 'null') counts[p] = (counts[p] || 0) + 1; });
+    const chips = Object.entries(counts).sort((a, b) => b[1] - a[1])
+      .map(([t, n]) => `<span class="chip">${esc(t)} <b>×${n}</b></span>`).join('');
+    sum.insertAdjacentHTML('beforeend',
+      `<div class="honor-block"><h3 class="disp">${esc(h.label)}</h3><div class="chips">${chips || '<span class="chip">Sin apuestas</span>'}</div></div>`);
+  });
+  const hp = $('#honor-players');
+  hp.innerHTML = '';
+  D.players.forEach((p, idx) => {
+    const list = D.honorRows.map(h =>
+      `<div><span>${esc(h.label)}</span><span>${esc(h.picks[idx])}</span></div>`).join('');
+    hp.insertAdjacentHTML('beforeend', `<details class="player-honor">
+      <summary><span><span class="silk" style="display:inline-block;vertical-align:-2px;background:${silkColor(p.name)};margin-right:7px"></span>${esc(p.name)}</span></summary>
+      <div class="honor-list">${list}</div></details>`);
+  });
+}
+
+/* ---------- navegación ---------- */
+document.querySelectorAll('nav button').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('nav button').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('section').forEach(x => x.classList.remove('active'));
+  b.classList.add('active');
+  document.getElementById(b.dataset.sec).classList.add('active');
+  window.scrollTo({top:0});
+  if (b.dataset.sec === 'sec-race') renderRace(); // re-animar la carrera
+}));
+
+/* ---------- arranque ---------- */
+load().then(d => {
+  D = d;
+  // etiquetas de desglose desde CLAS (se rellenan en load; aquí por simplicidad re-derivadas)
+  D.clasBkLabels = ['F. Grupos','Pos. Grupos','Equipos 1/16','Partidos 1/16','Equipos 1/8','Partidos 1/8',
+    'Equipos 1/4','Partidos 1/4','Equipos 1/2','Partidos 1/2','Equipos 3º-4º','Equipos Final',
+    'Partido 3º-4º','Partido Final','Cuadro de Honor'];
+  $('#loading').style.display = 'none';
+  $('#app').style.display = 'block';
+  renderHeader(); renderRace(); renderClas(); renderPredsSelect(); renderHonor();
+}).catch(e => {
+  console.error(e);
+  $('#loading').style.display = 'none';
+  $('#error').style.display = 'block';
+});
+</script>
+
+</body>
+</html>
