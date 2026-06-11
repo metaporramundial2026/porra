@@ -4,137 +4,154 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Porra Mundial 2026 · Metaporra</title>
+<title>Gran Premio Metaporra · Mundial 2026</title>
 <meta name="description" content="Clasificación y pronósticos de la porra del Mundial 2026">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
   :root{
-    --paper:#F2ECDD;        /* programa de carreras */
-    --ink:#16382B;          /* verde hipódromo */
-    --ink-soft:#4A6457;
-    --turf:#0E5C3F;
-    --track:#E3D5B8;        /* arena de la pista */
-    --track-line:#C9B68C;
-    --silk-red:#D43A26;     /* casaca / acento */
-    --gold:#C09A2C;
-    --card:#FBF8F0;
-    --shadow:0 1px 3px rgba(22,56,43,.12);
-    --radius:14px;
+    --turf:#0B3B28;          /* césped nocturno (fondo) */
+    --turf-2:#0E4A33;        /* césped claro (bandas) */
+    --card:#11543B;          /* tarjetas */
+    --card-edge:#1E6A4C;
+    --cream:#F7F1DC;         /* tinta principal */
+    --cream-dim:#C8D8C7;
+    --tote:#FFC72C;          /* amarillo panel de apuestas */
+    --silk:#FF5A3C;          /* rojo casaca */
+    --sand:#EFE3C2;          /* pista de arena */
+    --sand-line:#D2BE8E;
+    --ink-on-sand:#23301F;
+    --radius:16px;
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-  html{scroll-behavior:smooth}
-  body{font-family:'Barlow',system-ui,sans-serif;background:var(--paper);color:var(--ink);font-size:16px;line-height:1.45;padding-bottom:84px}
+  body{font-family:'Barlow',system-ui,sans-serif;background:var(--turf);color:var(--cream);
+    font-size:16px;line-height:1.45;padding-bottom:88px;
+    background-image:repeating-linear-gradient(180deg,transparent 0 120px,rgba(255,255,255,.022) 120px 240px)}
   h1,h2,h3,.disp{font-family:'Barlow Condensed',sans-serif}
 
-/* ===== Cabecera ===== */
-header{background:var(–turf);color:#F4F0E4;padding:14px 16px 12px;position:relative;overflow:hidden}
-header::after{content:””;position:absolute;left:0;right:0;bottom:0;height:5px;
-background:repeating-linear-gradient(90deg,#fff 0 10px,var(–ink) 10px 20px);opacity:.85}
-.eyebrow{font-family:‘Barlow Condensed’;font-weight:600;letter-spacing:.14em;text-transform:uppercase;font-size:.72rem;color:#CFE3D6}
-header h1{font-size:1.9rem;font-weight:800;line-height:1.05;letter-spacing:.01em;text-transform:uppercase}
-header h1 span{color:#F3C94C}
-.meta-line{display:flex;gap:14px;margin-top:6px;font-size:.8rem;color:#CFE3D6}
-.meta-line b{color:#fff;font-weight:600}
+/* ===== Cabecera: cartel de gran premio ===== */
+header{padding:18px 16px 14px;text-align:center;position:relative}
+header::after{content:””;display:block;margin:12px auto 0;height:8px;max-width:680px;border-radius:2px;
+background:repeating-conic-gradient(#0A2A1C 0% 25%, var(–cream) 0% 50%) 0 0/16px 16px}
+.eyebrow{font-family:‘Barlow Condensed’;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
+font-size:.72rem;color:var(–tote)}
+header h1{font-size:2.5rem;font-weight:900;line-height:.95;text-transform:uppercase;letter-spacing:.01em;margin:4px 0 2px}
+header h1 small{display:block;font-size:1.05rem;font-weight:700;letter-spacing:.3em;color:var(–cream-dim)}
+.meta-line{display:flex;justify-content:center;gap:18px;margin-top:8px;font-size:.8rem;color:var(–cream-dim)}
+.meta-line b{color:var(–tote);font-weight:700}
 
-/* ===== Navegación ===== */
-nav{position:fixed;bottom:0;left:0;right:0;z-index:50;background:var(–card);
-border-top:1px solid var(–track-line);display:flex;box-shadow:0 -2px 10px rgba(22,56,43,.12);
-padding-bottom:env(safe-area-inset-bottom)}
-nav button{flex:1;background:none;border:none;padding:9px 2px 8px;font-family:‘Barlow Condensed’;
-font-size:.86rem;font-weight:600;letter-spacing:.04em;color:var(–ink-soft);cursor:pointer;
-display:flex;flex-direction:column;align-items:center;gap:1px;text-transform:uppercase}
-nav button .ico{font-size:1.25rem;line-height:1}
-nav button.active{color:var(–silk-red)}
-nav button.active .ico{transform:translateY(-1px)}
-
-main{max-width:680px;margin:0 auto;padding:16px 14px 28px}
+main{max-width:680px;margin:0 auto;padding:14px 12px 28px}
 section{display:none}
 section.active{display:block;animation:fade .25s ease}
 @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion: reduce){section.active{animation:none}}
 
-.sec-title{font-size:1.45rem;font-weight:700;text-transform:uppercase;letter-spacing:.02em;margin-bottom:2px}
-.sec-sub{font-size:.85rem;color:var(–ink-soft);margin-bottom:14px}
+.sec-title{font-size:1.6rem;font-weight:800;text-transform:uppercase;letter-spacing:.03em}
+.sec-sub{font-size:.85rem;color:var(–cream-dim);margin:0 0 12px}
+
+/* ===== Comisario ===== */
+.steward{background:var(–card);border:1px solid var(–card-edge);border-radius:var(–radius);
+padding:12px 14px;margin-bottom:14px;display:flex;gap:12px;align-items:flex-start}
+.steward .face{font-size:1.9rem;line-height:1;flex:none;margin-top:2px}
+.steward h3{font-size:.72rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(–tote);margin-bottom:3px}
+.steward p{font-size:.92rem;color:var(–cream)}
+.steward p + p{margin-top:5px}
 
 /* ===== Carrera ===== */
-.race{background:var(–track);border:1px solid var(–track-line);border-radius:var(–radius);
-padding:10px 0 6px;position:relative;box-shadow:var(–shadow)}
-.race::before{content:””;position:absolute;top:0;bottom:0;right:34px;width:10px;
-background:repeating-conic-gradient(#16382B 0% 25%, #fff 0% 50%) 0 0/10px 10px;opacity:.9;border-radius:2px}
-.race-head{display:flex;justify-content:space-between;padding:0 14px 8px;font-family:‘Barlow Condensed’;
-font-weight:600;font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(–ink-soft)}
-.lane{position:relative;height:42px;border-top:1px dashed var(–track-line);padding:0 14px}
-.lane:last-child{border-bottom:1px dashed var(–track-line)}
-.horse{position:absolute;top:50%;transform:translateY(-50%);left:0;display:flex;align-items:center;gap:6px;
-transition:left 1.1s cubic-bezier(.22,.9,.35,1);will-change:left}
+.race{background:var(–sand);color:var(–ink-on-sand);border-radius:var(–radius);
+border:3px solid #fff;outline:3px solid rgba(0,0,0,.25);position:relative;padding:8px 0 4px;overflow:hidden}
+.race::before{content:””;position:absolute;top:0;bottom:0;right:26px;width:14px;
+background:repeating-conic-gradient(#1B1B1B 0% 25%, #fff 0% 50%) 0 0/14px 14px;z-index:1}
+.race-head{display:flex;justify-content:space-between;padding:2px 16px 8px;font-family:‘Barlow Condensed’;
+font-weight:800;font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:#6B6147}
+.lane{position:relative;height:50px;border-top:2px dashed var(–sand-line);padding:0 16px}
+.lane:nth-child(even){background:rgba(255,255,255,.28)}
+.horse{position:absolute;top:50%;transform:translateY(-50%);left:0;display:flex;align-items:center;gap:4px;
+transition:left 1.2s cubic-bezier(.2,.85,.3,1);will-change:left;z-index:2;max-width:96%}
 @media (prefers-reduced-motion: reduce){.horse{transition:none}}
-.horse .emoji{font-size:1.5rem;filter:drop-shadow(0 1px 1px rgba(0,0,0,.25))}
-.bib{display:inline-flex;align-items:center;gap:6px;background:var(–card);border:1px solid var(–track-line);
-border-radius:999px;padding:2px 9px 2px 4px;font-size:.78rem;font-weight:600;white-space:nowrap;box-shadow:var(–shadow)}
-.silk{width:14px;height:14px;border-radius:50%;border:2px solid #fff;flex:none}
-.bib .pts{font-family:‘Barlow Condensed’;font-weight:700;color:var(–silk-red);font-size:.85rem}
-.gate-note{margin:14px 2px 0;font-size:.85rem;color:var(–ink-soft);font-style:italic}
+.horse .emoji{font-size:1.7rem;filter:drop-shadow(0 2px 2px rgba(0,0,0,.3));flex:none}
+.bib{display:inline-flex;align-items:center;gap:7px;background:#22301F;color:var(–cream);
+border-radius:999px;padding:4px 12px 4px 5px;font-size:.84rem;font-weight:700;white-space:nowrap;
+box-shadow:0 2px 5px rgba(0,0,0,.3)}
+.silk{width:15px;height:15px;border-radius:50%;border:2px solid #fff;flex:none}
+.bib .pts{font-family:‘Barlow Condensed’;font-weight:900;color:var(–tote);font-size:1rem}
+.badge-pk{font-size:.85rem}
+.zone-tag{margin:16px 0 6px;display:flex;align-items:center;gap:8px}
+.zone-tag::after{content:””;flex:1;height:1px;background:var(–card-edge)}
+.zone-tag span{font-family:‘Barlow Condensed’;font-weight:800;font-size:.95rem;letter-spacing:.08em;
+text-transform:uppercase;color:var(–tote)}
+.gate-note{margin:14px 4px 0;font-size:.88rem;color:var(–cream-dim);font-style:italic}
 
-/* ===== Tablas ===== */
-.card{background:var(–card);border:1px solid var(–track-line);border-radius:var(–radius);
-box-shadow:var(–shadow);overflow:hidden;margin-bottom:14px}
-table{width:100%;border-collapse:collapse;font-size:.9rem}
-th{font-family:‘Barlow Condensed’;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
-font-size:.75rem;color:var(–ink-soft);text-align:left;padding:10px 10px 6px;border-bottom:2px solid var(–track-line)}
-td{padding:9px 10px;border-bottom:1px solid #EDE5D2;vertical-align:middle}
+/* ===== Tarjetas y tablas ===== */
+.card{background:var(–card);border:1px solid var(–card-edge);border-radius:var(–radius);
+overflow:hidden;margin-bottom:14px}
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+th{font-family:‘Barlow Condensed’;font-weight:800;text-transform:uppercase;letter-spacing:.1em;
+font-size:.74rem;color:var(–tote);text-align:left;padding:11px 12px 7px;border-bottom:2px solid var(–card-edge)}
+td{padding:10px 12px;border-bottom:1px solid #1A5C40;vertical-align:middle;color:var(–cream)}
 tr:last-child td{border-bottom:none}
 td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
-.pos-cell{font-family:‘Barlow Condensed’;font-weight:800;font-size:1.05rem;width:38px;color:var(–ink-soft)}
-.medal{font-size:1rem}
+td.num b{font-family:‘Barlow Condensed’;font-size:1.15rem;font-weight:900;color:var(–tote)}
+.pos-cell{font-family:‘Barlow Condensed’;font-weight:900;font-size:1.1rem;width:42px;color:var(–cream-dim)}
 .clas-row{cursor:pointer}
-.clas-row:active{background:#F4EEDD}
-.breakdown{display:none;background:#F6F1E2}
+.clas-row:active{background:#0F4A34}
+.nick{display:block;font-size:.72rem;color:var(–cream-dim);font-weight:500;margin-top:1px}
+.breakdown{display:none;background:#0E4631}
 .breakdown.open{display:table-row}
-.breakdown td{padding:10px 12px 12px}
-.bk-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;font-size:.82rem}
-.bk-grid div{display:flex;justify-content:space-between;border-bottom:1px dotted var(–track-line);padding:2px 0}
-.bk-grid b{font-variant-numeric:tabular-nums}
+.bk-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 18px;font-size:.82rem;padding:2px 0}
+.bk-grid div{display:flex;justify-content:space-between;border-bottom:1px dotted #1E6A4C;padding:2px 0;color:var(–cream-dim)}
+.bk-grid b{color:var(–cream);font-variant-numeric:tabular-nums}
 
 /* ===== Pronósticos ===== */
-.picker{display:flex;gap:8px;margin-bottom:12px}
-select{flex:1;font-family:‘Barlow’,sans-serif;font-size:.95rem;font-weight:500;color:var(–ink);
-background:var(–card);border:1px solid var(–track-line);border-radius:10px;padding:10px 12px;box-shadow:var(–shadow)}
-.match-head{background:var(–turf);color:#F4F0E4;padding:14px;border-radius:var(–radius) var(–radius) 0 0;text-align:center}
-.match-head .teams{font-family:‘Barlow Condensed’;font-weight:700;font-size:1.35rem;text-transform:uppercase;letter-spacing:.02em}
-.match-head .score{font-family:‘Barlow Condensed’;font-weight:800;font-size:2rem;color:#F3C94C;line-height:1.1}
-.match-head .when{font-size:.78rem;color:#CFE3D6;margin-top:2px}
-.pick{display:inline-block;font-family:‘Barlow Condensed’;font-weight:700;font-size:.95rem;
-background:#EFE8D4;border:1px solid var(–track-line);border-radius:7px;padding:1px 8px;white-space:nowrap}
-.pick.hit2{background:#DCEEDB;border-color:#9CC49A}
-.pick.hit1{background:#F6ECCB;border-color:#DFC878}
-td .pts-won{font-family:‘Barlow Condensed’;font-weight:800;color:var(–silk-red)}
+.picker select{width:100%;font-family:‘Barlow’,sans-serif;font-size:.95rem;font-weight:600;color:var(–cream);
+background:var(–card);border:1px solid var(–card-edge);border-radius:12px;padding:12px;margin-bottom:12px}
+.match-head{background:#0A2F20;padding:16px 14px;text-align:center;border-bottom:2px solid var(–card-edge)}
+.match-head .teams{font-family:‘Barlow Condensed’;font-weight:800;font-size:1.45rem;text-transform:uppercase}
+.match-head .score{font-family:‘Barlow Condensed’;font-weight:900;font-size:2.3rem;color:var(–tote);line-height:1.1}
+.match-head .when{font-size:.78rem;color:var(–cream-dim);margin-top:2px;text-transform:uppercase;letter-spacing:.1em}
+.pick{display:inline-block;font-family:‘Barlow Condensed’;font-weight:800;font-size:1rem;
+background:var(–sand);color:var(–ink-on-sand);border-radius:8px;padding:2px 9px;white-space:nowrap}
+.pick.hit2{background:var(–tote);box-shadow:0 0 0 2px rgba(255,199,44,.35)}
+.pick.hit1{background:#CFE3A8}
+td .pts-won{font-family:‘Barlow Condensed’;font-weight:900;font-size:1.05rem;color:var(–tote)}
 
 /* ===== Palmarés ===== */
-.honor-block{margin-bottom:16px}
-.honor-block h3{font-size:1.05rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;margin-bottom:8px}
-.chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{background:var(–card);border:1px solid var(–track-line);border-radius:999px;
-padding:4px 11px;font-size:.84rem;font-weight:500;box-shadow:var(–shadow)}
-.chip b{font-family:‘Barlow Condensed’;font-weight:800;color:var(–silk-red)}
-details.player-honor{background:var(–card);border:1px solid var(–track-line);border-radius:var(–radius);
-box-shadow:var(–shadow);margin-bottom:8px;overflow:hidden}
-details.player-honor summary{padding:11px 14px;font-weight:600;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center}
-details.player-honor summary::after{content:“▾”;color:var(–ink-soft);transition:transform .2s}
+.honor-block{margin-bottom:18px}
+.honor-block h3{font-size:1.1rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{background:var(–card);border:1px solid var(–card-edge);border-radius:999px;
+padding:5px 12px;font-size:.85rem;font-weight:600;color:var(–cream)}
+.chip b{font-family:‘Barlow Condensed’;font-weight:900;color:var(–tote)}
+details.player-honor{background:var(–card);border:1px solid var(–card-edge);border-radius:var(–radius);
+margin-bottom:8px;overflow:hidden}
+details.player-honor summary{padding:12px 14px;font-weight:700;cursor:pointer;list-style:none;
+display:flex;justify-content:space-between;align-items:center;color:var(–cream)}
+details.player-honor summary::-webkit-details-marker{display:none}
+details.player-honor summary::after{content:“▾”;color:var(–cream-dim);transition:transform .2s}
 details.player-honor[open] summary::after{transform:rotate(180deg)}
 .honor-list{padding:0 14px 12px;font-size:.86rem}
-.honor-list div{display:flex;justify-content:space-between;gap:10px;padding:4px 0;border-top:1px dotted var(–track-line)}
-.honor-list span:last-child{font-weight:600;text-align:right}
+.honor-list div{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-top:1px dotted var(–card-edge)}
+.honor-list span:first-child{color:var(–cream-dim)}
+.honor-list span:last-child{font-weight:700;text-align:right}
+
+/* ===== Navegación ===== */
+nav{position:fixed;bottom:0;left:0;right:0;z-index:50;background:#082418;
+border-top:2px solid var(–card-edge);display:flex;padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;background:none;border:none;padding:10px 2px 9px;font-family:‘Barlow Condensed’;
+font-size:.88rem;font-weight:800;letter-spacing:.06em;color:#7FA38D;cursor:pointer;
+display:flex;flex-direction:column;align-items:center;gap:1px;text-transform:uppercase}
+nav button .ico{font-size:1.3rem;line-height:1}
+nav button.active{color:var(–tote)}
 
 /* ===== Estados ===== */
-#loading,#error{text-align:center;padding:60px 20px;color:var(–ink-soft)}
-#loading .emoji{font-size:2.4rem;display:inline-block;animation:trot 1s ease-in-out infinite}
-@keyframes trot{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+#loading,#error{text-align:center;padding:60px 20px;color:var(–cream-dim)}
+#loading .emoji{font-size:2.6rem;display:inline-block;animation:trot 1s ease-in-out infinite}
+@keyframes trot{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 @media (prefers-reduced-motion: reduce){#loading .emoji{animation:none}}
 #error{display:none}
-#error code{background:var(–card);padding:2px 6px;border-radius:6px}
+#error code{background:var(–card);padding:2px 6px;border-radius:6px;color:var(–cream)}
 </style>
 
 </head>
@@ -142,9 +159,8 @@ details.player-honor[open] summary::after{transform:rotate(180deg)}
 
 <header>
   <div class="eyebrow">XXIII Mundial · USA · MEX · CAN</div>
-  <h1>Porra Mundial <span>2026</span></h1>
+  <h1>Gran Premio<br>Metaporra<small>Mundial 2026</small></h1>
   <div class="meta-line">
-    <div>Grupo <b>Metaporra</b></div>
     <div id="meta-update"></div>
     <div id="meta-day"></div>
   </div>
@@ -160,18 +176,19 @@ details.player-honor[open] summary::after{transform:rotate(180deg)}
 <main id="app" style="display:none">
 
   <section id="sec-race" class="active">
-    <div class="sec-title">La carrera</div>
-    <div class="sec-sub">Cada jugador avanza hacia la meta según sus puntos.</div>
-    <div class="race">
-      <div class="race-head"><span>Cajón de salida</span><span>Meta 🏁</span></div>
-      <div id="race-lanes"></div>
+    <div class="steward">
+      <div class="face">🎩</div>
+      <div><h3>El comisario de carrera dice</h3><div id="steward-lines"></div></div>
     </div>
+    <div class="sec-title">La carrera</div>
+    <p class="sec-sub">Cada jugador es un caballo. Más puntos, más cerca de la meta.</p>
+    <div id="race-zones"></div>
     <div class="gate-note" id="race-note"></div>
   </section>
 
   <section id="sec-clas">
     <div class="sec-title">Clasificación</div>
-    <div class="sec-sub">Toca un jugador para ver el desglose por fases.</div>
+    <p class="sec-sub">Toca un jugador para ver su desglose por fases.</p>
     <div class="card"><table id="clas-table">
       <thead><tr><th></th><th>Jugador</th><th class="num">Pts</th></tr></thead>
       <tbody></tbody>
@@ -180,7 +197,7 @@ details.player-honor[open] summary::after{transform:rotate(180deg)}
 
   <section id="sec-preds">
     <div class="sec-title">Pronósticos</div>
-    <div class="sec-sub">Elige un partido y mira qué dijo cada uno.</div>
+    <p class="sec-sub">Elige un partido y mira qué dijo cada uno.</p>
     <div class="picker"><select id="match-select"></select></div>
     <div class="card">
       <div class="match-head" id="match-head"></div>
@@ -193,9 +210,9 @@ details.player-honor[open] summary::after{transform:rotate(180deg)}
 
   <section id="sec-honor">
     <div class="sec-title">Palmarés</div>
-    <div class="sec-sub">Apuestas de campeón, podio, Botas y Balones.</div>
+    <p class="sec-sub">Apuestas de campeón, podio, Botas y Balones.</p>
     <div id="honor-summary"></div>
-    <h3 class="disp" style="font-size:1.05rem;text-transform:uppercase;margin:18px 0 8px">Papeleta por jugador</h3>
+    <h3 class="disp" style="font-size:1.1rem;text-transform:uppercase;margin:20px 0 8px">Papeleta por jugador</h3>
     <div id="honor-players"></div>
   </section>
 
@@ -210,17 +227,37 @@ details.player-honor[open] summary::after{transform:rotate(180deg)}
 
 <script>
 "use strict";
+/* ============================================================
+   CONFIGURACIÓN DEL GRUPO (edita esta sección si quieres)
+   ============================================================ */
 const FILE = 'porra.xlsx';
-const $ = s => document.querySelector(s);
 
-/* ---------- utilidades ---------- */
+// 📖 Los panenkitas: intelectuales del fútbol del grupo.
+// Escribe los nombres EXACTAMENTE como aparecen en el Excel.
+const PANENKITAS = [
+  // 'Nombre Apellido',
+];
+
+// Motes por tramo de carrera (de la cabeza a la cola)
+const ZONES = [
+  {pct:0.00, label:'👑 A galope tendido'},
+  {pct:0.10, label:'🐎 Pisándole los cascos al líder'},
+  {pct:0.35, label:'🏇 El pelotón'},
+  {pct:0.70, label:'🐴 Al trote cochinero'},
+  {pct:0.90, label:'🏮 El farolillo rojo'},
+];
+/* ============================================================ */
+
+const $ = s => document.querySelector(s);
 const serialToDate = s => new Date(Math.round((s - 25569) * 86400 * 1000));
 const fmtDate = d => d.toLocaleDateString('es-ES', {weekday:'short', day:'numeric', month:'short'});
 const silkColor = name => {
   let h = 0; for (const ch of name) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
-  return `hsl(${h % 360} 62% 42%)`;
+  return `hsl(${h % 360} 65% 45%)`;
 };
 const esc = t => String(t ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const isPK = name => PANENKITAS.some(p => p.toLowerCase() === name.toLowerCase());
+const pkBadge = name => isPK(name) ? ' <span class="badge-pk" title="Panenkita">📖</span>' : '';
 
 /* ---------- carga y parseo ---------- */
 async function load(){
@@ -231,7 +268,6 @@ async function load(){
   const grid = n => XLSX.utils.sheet_to_json(wb.Sheets[n], {header:1, raw:true, defval:null});
   const A = grid('ADMIN'), C = grid('CLAS');
 
-  // Jugadores: fila 5 de ADMIN (idx 4), columnas S, V, Y… (18 + 3k)
   const players = [];
   for (let c = 18; c < (A[4] || []).length; c += 3){
     const n = A[4][c];
@@ -240,24 +276,19 @@ async function load(){
   }
   const N = players.length;
 
-  // Clasificación: CLAS filas 5..5+N (idx 4..), etiquetas de desglose en idx 3
-  const bkLabels = (C[3] || []).slice(4, 19).map(x => String(x || '').trim());
   const clas = [];
   for (let r = 4; r < 4 + N; r++){
     clas.push({pos:C[r][1], name:String(C[r][2]).trim(), total:+C[r][3] || 0,
       bk:(C[r] || []).slice(4, 19).map(x => +x || 0)});
   }
 
-  // Partidos de grupos: ADMIN idx 5..76
   const matches = [];
   for (let r = 5; r <= 76; r++){
     if (!A[r] || !A[r][10]) continue;
-    matches.push({phase:'Grupos', jor:'J' + A[r][6], code:A[r][9], name:String(A[r][10]).trim(),
+    matches.push({phase:'Grupos', jor:'J' + A[r][6], name:String(A[r][10]).trim(),
       date:typeof A[r][7] === 'number' ? serialToDate(A[r][7]) : null,
       result:A[r][12], row:r});
   }
-
-  // Eliminatorias (enfrentamientos): solo si algún jugador ya tiene pronóstico
   const KO = [
     ['Dieciseisavos', 163, 178], ['Octavos', 199, 206], ['Cuartos', 219, 222],
     ['Semifinales', 231, 232], ['3º y 4º puesto', 243, 243], ['Final', 246, 246]
@@ -265,12 +296,11 @@ async function load(){
   for (const [phase, r1, r2] of KO){
     for (let r = r1; r <= r2; r++){
       if (!A[r]) continue;
-      const hasPred = players.some(p => A[r][p.col] && String(A[r][p.col]).includes('·'));
-      if (hasPred) matches.push({phase, jor:phase, code:String(A[r][9] || ''), name:String(A[r][10]).trim(), date:null, result:A[r][12], row:r});
+      if (players.some(p => A[r][p.col] && String(A[r][p.col]).includes('·')))
+        matches.push({phase, jor:phase, name:String(A[r][10]).trim(), date:null, result:A[r][12], row:r});
     }
   }
 
-  // Palmarés: idx 249..257
   const honorRows = [];
   for (let r = 249; r <= 257; r++){
     if (!A[r]) continue;
@@ -280,73 +310,151 @@ async function load(){
   return {players, clas, matches, honorRows, A, lastMod};
 }
 
-/* ---------- render ---------- */
-let D;
+/* ---------- comisario ---------- */
+function stewardLines(){
+  const s = [...D.clas].sort((a, b) => b.total - a.total);
+  const max = s[0].total, lines = [];
+  const day = dayOfCup() || 1;
+  const pick = arr => arr[day % arr.length];
 
-function renderHeader(){
-  if (D.lastMod) $('#meta-update').innerHTML = 'Actualizado <b>' + fmtDate(new Date(D.lastMod)) + '</b>';
-  const first = D.matches.find(m => m.date)?.date;
-  if (first){
-    const day = Math.floor((Date.now() - first.getTime()) / 86400000) + 1;
-    if (day >= 1) $('#meta-day').innerHTML = 'Día <b>' + day + '</b> del Mundial';
+  if (max === 0){
+    lines.push(pick([
+      'Los 34 purasangres siguen en el cajón. Nervios, relinchos y mucho cuñadismo en el paddock.',
+      'Todavía nadie ha puntuado, pero ya hay quien va contando por ahí que "su pronóstico era el bueno".',
+      'Carrera sin empezar y los panenkitas ya han escrito tres ensayos sobre el falso nueve de Curazao.'
+    ]));
+  } else {
+    const leaders = s.filter(p => p.total === max).map(p => p.name);
+    const minPts = s[s.length - 1].total;
+    const tail = s.filter(p => p.total === minPts).map(p => p.name);
+    if (leaders.length === 1){
+      const extra = isPK(leaders[0]) ? ' Y encima es panenkita: inaguantable en el grupo. 📖' : '';
+      lines.push(pick([
+        `<b>${esc(leaders[0])}</b> galopa en cabeza con ${max} puntos.${extra}`,
+        `<b>${esc(leaders[0])}</b> lidera con ${max} puntos y ya saluda a la grada.${extra}`,
+        `Manda <b>${esc(leaders[0])}</b> (${max} pts). Fusta en mano y sin mirar atrás.${extra}`
+      ]));
+    } else {
+      lines.push(`Cabeza compartida: <b>${leaders.map(esc).join(', ')}</b> empatados a ${max} puntos. Foto finish desde la jornada 1.`);
+    }
+    if (tail.length <= 3 && minPts < max){
+      const t = tail.map(esc).join(' y ');
+      const pkTail = tail.some(isPK) ? ' Tanto leer Panenka para esto. 📖' : '';
+      lines.push(pick([
+        `Cierra la carrera <b>${t}</b>: dicen que su caballo se paró a ver la repetición en VAR.${pkTail}`,
+        `<b>${t}</b> porta el farolillo rojo con dignidad. El veterinario está avisado.${pkTail}`,
+        `Por la cola, <b>${t}</b>. El caballo está bien; el jinete es lo que preocupa.${pkTail}`
+      ]));
+    }
+    if (s.length > 1 && s[0].total - s[1].total >= 5)
+      lines.push(`Ojo: ${s[0].total - s[1].total} puntos de ventaja en cabeza. Huele a escapada.`);
   }
+  $('#steward-lines').innerHTML = lines.map(l => `<p>${l}</p>`).join('');
 }
 
+function dayOfCup(){
+  const first = D.matches.find(m => m.date)?.date;
+  return first ? Math.floor((Date.now() - first.getTime()) / 86400000) + 1 : null;
+}
+
+/* ---------- carrera ---------- */
 function renderRace(){
-  const lanes = $('#race-lanes');
-  lanes.innerHTML = '';
+  const wrap = $('#race-zones');
+  wrap.innerHTML = '';
   const sorted = [...D.clas].sort((a, b) => b.total - a.total);
   const max = Math.max(...sorted.map(p => p.total));
+  const n = sorted.length;
+
+  // agrupar por zonas según posición relativa
+  const zoneOf = i => {
+    if (max === 0) return null;
+    const frac = i / (n - 1 || 1);
+    let z = ZONES[0];
+    for (const zz of ZONES) if (frac >= zz.pct) z = zz;
+    return z.label;
+  };
+
+  let currentZone = null, raceDiv = null, lanesDiv = null;
+  const newTrack = label => {
+    if (label !== null) wrap.insertAdjacentHTML('beforeend',
+      `<div class="zone-tag"><span>${label}</span></div>`);
+    raceDiv = document.createElement('div'); raceDiv.className = 'race';
+    raceDiv.innerHTML = `<div class="race-head"><span>Salida</span><span>Meta</span></div>`;
+    lanesDiv = document.createElement('div'); raceDiv.appendChild(lanesDiv);
+    wrap.appendChild(raceDiv);
+  };
+
   sorted.forEach((p, i) => {
+    const z = zoneOf(i);
+    if (raceDiv === null || z !== currentZone){ currentZone = z; newTrack(z); }
     const lane = document.createElement('div');
     lane.className = 'lane';
-    const pct = max > 0 ? 4 + (p.total / max) * 76 : 2;  // 4–80% del ancho; meta al 86%
-    const medal = max > 0 ? (i === 0 ? '🥇 ' : i === 1 ? '🥈 ' : i === 2 ? '🥉 ' : '') : '';
-    lane.innerHTML = `<div class="horse" style="left:2%">
-        <span class="emoji">🏇</span>
-        <span class="bib"><span class="silk" style="background:${silkColor(p.name)}"></span>${medal}${esc(p.name)} <span class="pts">${p.total}</span></span>
+    const pct = max > 0 ? Math.min(4 + (p.total / max) * 64, 68) : 2;
+    const medal = max > 0 ? (['🥇','🥈','🥉'][i] ? ['🥇','🥈','🥉'][i] + ' ' : '') : '';
+    const emoji = max > 0 && i === n - 1 && n > 5 ? '🐢' : '🏇';
+    lane.innerHTML = `<div class="horse" style="left:1%">
+        <span class="emoji">${emoji}</span>
+        <span class="bib"><span class="silk" style="background:${silkColor(p.name)}"></span>${medal}${esc(p.name)}${pkBadge(p.name)} <span class="pts">${p.total}</span></span>
       </div>`;
-    lanes.appendChild(lane);
+    lanesDiv.appendChild(lane);
     requestAnimationFrame(() => requestAnimationFrame(() => {
       lane.firstElementChild.style.left = pct + '%';
     }));
   });
+
   $('#race-note').textContent = max === 0
-    ? '🔫 ¡Todos en el cajón de salida! La carrera empieza con el primer resultado.'
-    : 'Posiciones a escala: la meta es el líder actual.';
+    ? '🔫 Todos en el cajón de salida. La carrera arranca con el primer resultado.'
+    : 'Posiciones a escala: la meta es el líder actual. La tortuga es quien va último, con cariño. 🐢';
 }
+
+/* ---------- clasificación ---------- */
+const NICKS = (i, n, total, max) => {
+  if (max === 0) return 'En el cajón de salida';
+  if (i === 0) return '👑 A galope tendido';
+  if (i <= 2) return '🐎 Pisándole los cascos';
+  if (i === n - 1) return '🏮 Farolillo rojo';
+  if (i / n >= 0.7) return '🐴 Al trote cochinero';
+  return '🏇 En el pelotón';
+};
 
 function renderClas(){
   const tb = $('#clas-table tbody');
   tb.innerHTML = '';
+  const sorted = [...D.clas].sort((a, b) => b.total - a.total);
+  const max = sorted[0]?.total || 0;
+  D.clasBkLabels = ['F. Grupos','Pos. Grupos','Equipos 1/16','Partidos 1/16','Equipos 1/8','Partidos 1/8',
+    'Equipos 1/4','Partidos 1/4','Equipos 1/2','Partidos 1/2','Equipos 3º-4º','Equipos Final',
+    'Partido 3º-4º','Partido Final','Cuadro de Honor'];
   D.clas.forEach((p, i) => {
     const tr = document.createElement('tr');
     tr.className = 'clas-row';
     const medal = ['🥇','🥈','🥉'][i] || (i + 1) + 'º';
     tr.innerHTML = `<td class="pos-cell">${medal}</td>
-      <td><span class="silk" style="display:inline-block;vertical-align:-2px;background:${silkColor(p.name)};margin-right:7px"></span>${esc(p.name)}</td>
+      <td><span class="silk" style="display:inline-block;vertical-align:-2px;background:${silkColor(p.name)};margin-right:8px"></span>${esc(p.name)}${pkBadge(p.name)}
+        <span class="nick">${NICKS(i, D.clas.length, p.total, max)}</span></td>
       <td class="num"><b>${p.total}</b></td>`;
     const bk = document.createElement('tr');
     bk.className = 'breakdown';
-    const items = D.clasBkLabels.map((l, k) => l ? `<div><span>${esc(l)}</span><b>${p.bk[k]}</b></div>` : '').join('');
+    const items = D.clasBkLabels.map((l, k) => `<div><span>${esc(l)}</span><b>${p.bk[k]}</b></div>`).join('');
     bk.innerHTML = `<td colspan="3"><div class="bk-grid">${items}</div></td>`;
     tr.addEventListener('click', () => bk.classList.toggle('open'));
     tb.appendChild(tr); tb.appendChild(bk);
   });
 }
 
+/* ---------- pronósticos ---------- */
 function renderPredsSelect(){
   const sel = $('#match-select');
   sel.innerHTML = '';
   let g = null, og = null;
   D.matches.forEach((m, i) => {
-    if (m.jor !== g){ g = m.jor; og = document.createElement('optgroup'); og.label = m.phase === 'Grupos' ? 'Jornada ' + m.jor.slice(1) : m.jor; sel.appendChild(og); }
+    if (m.jor !== g){ g = m.jor; og = document.createElement('optgroup');
+      og.label = m.phase === 'Grupos' ? 'Jornada ' + m.jor.slice(1) : m.jor; sel.appendChild(og); }
     const o = document.createElement('option');
     o.value = i;
     o.textContent = (m.date ? fmtDate(m.date) + ' · ' : '') + m.name.replace('-', ' – ');
     og.appendChild(o);
   });
-  // por defecto: último partido con resultado, o el primero
   let def = 0;
   D.matches.forEach((m, i) => { if (m.result && m.result !== '-') def = i; });
   sel.value = def;
@@ -359,7 +467,7 @@ function renderMatch(i){
   const played = m.result && m.result !== '-';
   $('#match-head').innerHTML = `
     <div class="teams">${esc(m.name.replace('-', '  ·  '))}</div>
-    <div class="score">${played ? esc(m.result) : 'Por jugar'}</div>
+    <div class="score">${played ? esc(String(m.result)) : 'Por jugar'}</div>
     <div class="when">${m.phase}${m.date ? ' · ' + fmtDate(m.date) : ''}</div>`;
   const tb = $('#preds-table tbody');
   tb.innerHTML = '';
@@ -372,12 +480,13 @@ function renderMatch(i){
     const cls = r.pts >= 2 ? 'hit2' : r.pts >= 1 ? 'hit1' : '';
     const pretty = esc(r.raw.replace('·', ' · ').replace('|', ' | '));
     tb.insertAdjacentHTML('beforeend', `<tr>
-      <td><span class="silk" style="display:inline-block;vertical-align:-2px;background:${silkColor(r.name)};margin-right:7px"></span>${esc(r.name)}</td>
+      <td><span class="silk" style="display:inline-block;vertical-align:-2px;background:${silkColor(r.name)};margin-right:8px"></span>${esc(r.name)}${pkBadge(r.name)}</td>
       <td><span class="pick ${cls}">${pretty}</span></td>
       <td class="num">${r.pts > 0 ? '<span class="pts-won">+' + r.pts + '</span>' : '·'}</td></tr>`);
   });
 }
 
+/* ---------- palmarés ---------- */
 function renderHonor(){
   const sum = $('#honor-summary');
   sum.innerHTML = '';
@@ -395,31 +504,34 @@ function renderHonor(){
     const list = D.honorRows.map(h =>
       `<div><span>${esc(h.label)}</span><span>${esc(h.picks[idx])}</span></div>`).join('');
     hp.insertAdjacentHTML('beforeend', `<details class="player-honor">
-      <summary><span><span class="silk" style="display:inline-block;vertical-align:-2px;background:${silkColor(p.name)};margin-right:7px"></span>${esc(p.name)}</span></summary>
+      <summary><span><span class="silk" style="display:inline-block;vertical-align:-2px;background:${silkColor(p.name)};margin-right:8px"></span>${esc(p.name)}${pkBadge(p.name)}</span></summary>
       <div class="honor-list">${list}</div></details>`);
   });
 }
 
-/* ---------- navegación ---------- */
+/* ---------- cabecera y navegación ---------- */
+function renderHeader(){
+  if (D.lastMod) $('#meta-update').innerHTML = 'Actualizado <b>' + fmtDate(new Date(D.lastMod)) + '</b>';
+  const day = dayOfCup();
+  if (day && day >= 1) $('#meta-day').innerHTML = 'Día <b>' + day + '</b> del Mundial';
+}
+
 document.querySelectorAll('nav button').forEach(b => b.addEventListener('click', () => {
   document.querySelectorAll('nav button').forEach(x => x.classList.remove('active'));
   document.querySelectorAll('section').forEach(x => x.classList.remove('active'));
   b.classList.add('active');
   document.getElementById(b.dataset.sec).classList.add('active');
   window.scrollTo({top:0});
-  if (b.dataset.sec === 'sec-race') renderRace(); // re-animar la carrera
+  if (b.dataset.sec === 'sec-race') renderRace();
 }));
 
 /* ---------- arranque ---------- */
+let D;
 load().then(d => {
   D = d;
-  // etiquetas de desglose desde CLAS (se rellenan en load; aquí por simplicidad re-derivadas)
-  D.clasBkLabels = ['F. Grupos','Pos. Grupos','Equipos 1/16','Partidos 1/16','Equipos 1/8','Partidos 1/8',
-    'Equipos 1/4','Partidos 1/4','Equipos 1/2','Partidos 1/2','Equipos 3º-4º','Equipos Final',
-    'Partido 3º-4º','Partido Final','Cuadro de Honor'];
   $('#loading').style.display = 'none';
   $('#app').style.display = 'block';
-  renderHeader(); renderRace(); renderClas(); renderPredsSelect(); renderHonor();
+  renderHeader(); stewardLines(); renderClas(); renderRace(); renderPredsSelect(); renderHonor();
 }).catch(e => {
   console.error(e);
   $('#loading').style.display = 'none';
