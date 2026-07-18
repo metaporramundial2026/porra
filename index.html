@@ -247,11 +247,20 @@
   .match-head .score{font-family:'Spline Sans Mono';font-weight:700;font-size:2.2rem;color:var(--tote);line-height:1.15}
   .match-head .when{font-family:'Spline Sans Mono';font-size:.66rem;color:var(--cream-dim);margin-top:3px;
     text-transform:uppercase;letter-spacing:.12em}
-  .pick{display:inline-block;font-family:'Barlow Condensed';font-weight:800;font-size:1rem;
-    background:var(--sand);color:var(--ink-on-sand);border-radius:8px;padding:2px 9px;white-space:nowrap}
+  .pick{display:inline-block;font-family:'Barlow Condensed';font-weight:800;font-size:.95rem;
+    background:var(--sand);color:var(--ink-on-sand);border-radius:8px;padding:3px 8px;
+    white-space:normal;line-height:1.25;word-break:break-word}
   .pick.hit2{background:var(--tote);box-shadow:0 0 0 2px rgba(245,197,24,.35)}
   .pick.hit1{background:#F3DFA0}
   td .pts-won{font-family:'Barlow Condensed';font-weight:900;font-size:1.05rem;color:var(--tote)}
+  /* evitar corte horizontal en la tabla de pronósticos */
+  #preds-table{table-layout:fixed;width:100%}
+  #preds-table th:nth-child(1){width:41%}
+  #preds-table th:nth-child(3){width:46px}
+  #preds-table td{padding:9px 8px}
+  #preds-table td:first-child{overflow:hidden}
+  #preds-table .pname{display:flex;align-items:center;gap:8px;min-width:0}
+  #preds-table .pnt{display:block;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
 
   /* ===== La Gran Final ===== */
   .final-cartel{max-width:680px;margin:2px auto 6px;padding:0 12px;text-align:center;position:relative}
