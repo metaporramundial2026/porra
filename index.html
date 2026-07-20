@@ -445,7 +445,7 @@
         <span class="medal">🥈</span>
         <div class="who">
           <div class="nm">Carlos Murciano</div>
-          <div class="vd">Plata en la pista… y ojo, que la noche del vidente aún no ha terminado. 🔮</div>
+          <div class="vd">Plata en la pista y, sin comerlo ni beberlo, el caballo que decidió la metaporra. 🔮</div>
         </div>
         <div class="prize"><b data-amount="280">0 €</b><i>35% del bote</i></div>
       </div>
@@ -490,16 +490,16 @@
 
     <div class="meta-win" id="meta-win">
       <div class="mw-crown">👑</div>
-      <div class="mw-name">Carlos Murciano</div>
+      <div class="mw-name">Jaime Lafuente</div>
       <div class="mw-prize"><span id="meta-amount">0 €</span><small>Se lo lleva todo</small></div>
-      <p class="mw-story">De las 39 papeletas, solo una persona en todo el hipódromo confió en Carlos Murciano: <b>él mismo</b>.
-        <span class="punch">La fe más rentable del Mundial. Mientras todos miraban a los Lafuente, el vidente se señalaba al espejo. Chapeau. 🎩</span>
+      <p class="mw-story">Ocho papeletas señalaban a Jaime Lafuente como caballo ganador. Ninguna cobró. La que cobró fue la suya: mientras todo el hipódromo apostaba por él, <b>Jaime apostó por Carlos Murciano</b>… que acabó siendo el mejor caballo con papeleta.
+        <span class="punch">El favorito esquivó su propia sombra y se llevó el bote por la puerta de atrás. Jugada de tahúr. 🎩</span>
       </p>
 
       <div class="papeletas">
         <h3>🗳️ Las papeletas, al descubierto</h3>
         <div class="pp-card" id="pp-list"></div>
-        <p class="pp-note">💰 marca las apuestas de 20 €. La fila dorada es la papeleta ganadora: el autorretrato de Murciano.</p>
+        <p class="pp-note">💰 marca las apuestas de 20 €. La fila dorada es la papeleta ganadora: Jaime apostando por Murciano mientras ocho apostaban por Jaime.</p>
       </div>
 
       <p class="also-ran" style="margin-top:18px">La próxima carrera ya se está tramando en las cuadras… 🐎</p>
@@ -600,7 +600,7 @@ const PAPELETAS = [
   ['KIRICOCHO','IGNACIO LAFUENTE',5],
   ['KIRICOCHO','Admin',5],
   ['KIRICOCHO','Jaime Lafuente',5],
-  ['Carlos Murciano','Carlos Murciano',5],
+  ['Carlos Murciano','Jaime Lafuente',5],
   ['IGNACIO LAFUENTE','Antonio Zulueta Ramos',5],
   ['Gratacós','Gratacós',5],
   ['Ramos','Fernando Carlos García-Ramos Redondo',5],
@@ -692,7 +692,7 @@ function renderPapeletas(){
   box.dataset.done = '1';
   const rows = [...PAPELETAS].sort((a, b) => b[2] - a[2] || a[0].localeCompare(b[0], 'es'));
   box.innerHTML = rows.map(([who, pick, eur]) => {
-    const winner = who === 'Carlos Murciano' && pick === 'Carlos Murciano';
+    const winner = who === 'Jaime Lafuente' && pick === 'Carlos Murciano';
     const big = eur >= 20;
     return `<div class="pp-row${winner ? ' winner' : ''}${big ? ' big' : ''}">
       <span class="a">${esc(who)}</span><span class="fl">→</span>
